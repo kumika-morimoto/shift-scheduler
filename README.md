@@ -72,8 +72,8 @@ UI とロジックの初期生成には、Google Gemini（無料プラン / Canv
 
 ### 1. リポジトリをクローン
 ```bash
-git clone <このリポジトリのURL>
-cd <フォルダ名>
+git clone https://github.com/kumika-morimoto/shift-scheduler.git
+cd shift-scheduler
 ```
 
 ### 2. 依存パッケージをインストール
