@@ -1,0 +1,18 @@
+import { COLORS } from './constants';
+
+export const initialStaff = [
+  { id: 1, name: 'Staff01', type: 'free', color: COLORS[0], maxDailyHours: 3, maxWeeklyDays: 3, freeHours: [6, 9], offDates: [], pref: { 0:[6,9,false], 1:[6,9,false], 2:[6,9,false], 3:[6,9,false], 4:[6,9,false], 5:[6,9,false], 6:[6,9,false] } },
+  { id: 2, name: 'Staff02', type: 'fixed', color: COLORS[1], maxDailyHours: 6, maxWeeklyDays: 5, freeHours: [6, 12], pref: { 0:[6,12,false], 1:[6,12,false], 2:[6,12,false], 3:[6,12,false], 4:[6,12,false], 5:[0,0,true], 6:[0,0,true] }, offDates: [] },
+  { id: 3, name: 'Staff03', type: 'fixed', color: COLORS[2], maxDailyHours: 3, maxWeeklyDays: 2, freeHours: [6, 9], pref: { 0:[0,0,true], 1:[0,0,true], 2:[0,0,true], 3:[0,0,true], 4:[0,0,true], 5:[6,9,false], 6:[6,9,false] }, offDates: [] },
+  { id: 4, name: 'Staff04', type: 'fixed', color: COLORS[3], maxDailyHours: 3, maxWeeklyDays: 3, freeHours: [14, 17], pref: { 0:[14,17,false], 1:[0,0,true], 2:[14,17,false], 3:[14,17,false], 4:[0,0,true], 5:[0,0,true], 6:[0,0,true] }, offDates: [] },
+  { id: 5, name: 'Staff05', type: 'fixed', color: COLORS[4], maxDailyHours: 8, maxWeeklyDays: 3, freeHours: [9, 18], pref: { 0:[0,0,true], 1:[0,0,true], 2:[0,0,true], 3:[9,18,false], 4:[0,0,true], 5:[9,18,false], 6:[9,18,false] }, offDates: [] },
+  { id: 6, name: 'Staff06', type: 'free', color: COLORS[5], maxDailyHours: 5, maxWeeklyDays: 4, freeHours: [9, 17], offDates: [], pref: { 0:[9,17,false], 1:[9,17,false], 2:[9,17,false], 3:[9,17,false], 4:[9,17,false], 5:[9,17,false], 6:[9,17,false] } },
+  { id: 7, name: 'Staff07', type: 'free', color: COLORS[6], maxDailyHours: 8, maxWeeklyDays: 5, freeHours: [12, 24], offDates: [], pref: { 0:[12,24,false], 1:[12,24,false], 2:[12,24,false], 3:[12,24,false], 4:[12,24,false], 5:[12,24,false], 6:[12,24,false] } },
+  { id: 8, name: 'Staff08', type: 'free', color: COLORS[7], maxDailyHours: 10, maxWeeklyDays: 5, freeHours: [12, 30], offDates: [], pref: { 0:[12,30,false], 1:[12,30,false], 2:[12,30,false], 3:[12,30,false], 4:[12,30,false], 5:[12,30,false], 6:[12,30,false] } },
+  { id: 9, name: 'Staff09', type: 'free', color: COLORS[8], maxDailyHours: 5, maxWeeklyDays: 3, freeHours: [17, 22], offDates: [], pref: { 0:[17,22,false], 1:[17,22,false], 2:[17,22,false], 3:[17,22,false], 4:[17,22,false], 5:[17,22,false], 6:[17,22,false] } },
+  { id: 10, name: 'Staff10', type: 'free', color: COLORS[9], maxDailyHours: 5, maxWeeklyDays: 3, freeHours: [17, 22], offDates: [], pref: { 0:[17,22,false], 1:[17,22,false], 2:[17,22,false], 3:[17,22,false], 4:[17,22,false], 5:[17,22,false], 6:[17,22,false] } },
+  { id: 11, name: 'Staff11', type: 'free', color: COLORS[10], maxDailyHours: 11, maxWeeklyDays: 6, freeHours: [22, 33], offDates: [], pref: { 0:[22,33,false], 1:[22,33,false], 2:[22,33,false], 3:[22,33,false], 4:[22,33,false], 5:[22,33,false], 6:[22,33,false] } },
+  { id: 12, name: 'Staff12', type: 'free', color: COLORS[11], maxDailyHours: 3, maxWeeklyDays: 3, freeHours: [6, 15], offDates: [], pref: { 0:[6,15,false], 1:[6,15,false], 2:[6,15,false], 3:[6,15,false], 4:[6,15,false], 5:[6,15,false], 6:[6,15,false] } },
+  { id: 13, name: 'Staff13', type: 'free', color: COLORS[12], maxDailyHours: 5, maxWeeklyDays: 5, freeHours: [7, 12], offDates: [], pref: { 0:[7,12,false], 1:[7,12,false], 2:[7,12,false], 3:[7,12,false], 4:[7,12,false], 5:[7,12,false], 6:[7,12,false] } },
+  { id: 14, name: 'Staff14', type: 'fixed', color: COLORS[13], maxDailyHours: 3, maxWeeklyDays: 5, freeHours: [19, 22], pref: { 0:[19,22,false], 1:[19,22,false], 2:[19,22,false], 3:[19,22,false], 4:[0,0,true], 5:[19,22,false], 6:[0,0,true] }, offDates: [] },
+];
