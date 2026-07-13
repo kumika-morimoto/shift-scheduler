@@ -23,7 +23,7 @@ const ShiftViewer = ({ staffList, weekDates, startDate, setStartDate, generatedS
             <div className="bg-white border rounded-[1.5rem] shadow-sm p-4 overflow-x-auto custom-scrollbar">
               <div className="min-w-[1000px] relative">
                 <div className="flex mb-4 border-b border-slate-50 pb-2">
-                  {Array.from({ length: 30 }).map((_, i) => {
+                  {Array.from({ length: 24 }).map((_, i) => {
                     const hourVal = i + 6;
                     const label = hourVal >= 24 ? `翌${hourVal - 24}` : hourVal;
                     return (
@@ -38,7 +38,7 @@ const ShiftViewer = ({ staffList, weekDates, startDate, setStartDate, generatedS
                         <div
                           key={sIdx}
                           className={`absolute h-8 rounded-lg border border-white shadow-sm flex items-center justify-center ${seg.color}`}
-                          style={{ left: `${((seg.start - 6) / 30) * 100}%`, width: `${(seg.duration / 30) * 100}%` }}
+                          style={{ left: `${((seg.start - 6) / 24) * 100}%`, width: `${(seg.duration / 24) * 100}%` }}
                         >
                           <span className="text-[9px] font-black truncate px-1">{seg.name}</span>
                         </div>

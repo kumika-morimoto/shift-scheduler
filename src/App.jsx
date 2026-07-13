@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar';
 import ShiftViewer from './components/ShiftViewer';
 import StaffSettings from './components/StaffSettings';
 import { useStaffList } from './hooks/useStaffList';
-import { generateShift } from './utils/shiftGenerator';
+import { generateWeeklyShift } from './utils/shiftGenerator';
 
 const getInitialMonday = () => {
   const d = new Date();
@@ -35,7 +35,7 @@ const App = () => {
   }, [startDate]);
 
   const handleGenerate = () => {
-    setGeneratedShift(generateShift(staffList, weekDates));
+    setGeneratedShift(generateWeeklyShift(staffList, weekDates));
     setActiveTab('viewer');
     setIsSidebarOpen(false);
   };
