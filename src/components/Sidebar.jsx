@@ -6,7 +6,7 @@ const Sidebar = ({ isOpen, onClose, activeTab, setActiveTab, onGenerate }) => (
       className={`fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] lg:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       onClick={onClose}
     />
-    <aside className={`fixed inset-y-0 left-0 z-[210] bg-white w-72 border-r transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static transition-transform duration-300 ease-out flex flex-col p-6`}>
+    <aside className={`fixed inset-y-0 left-0 z-[210] bg-white w-72 border-r transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:shrink-0 lg:h-screen transition-transform duration-300 ease-out flex flex-col p-6`}>
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-2 font-black text-xl text-indigo-600 italic"><ShieldCheck /> SHIFT MASTER</div>
         <button onClick={onClose} className="lg:hidden p-2 text-slate-400"><X size={20} /></button>
