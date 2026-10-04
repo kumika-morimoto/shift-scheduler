@@ -41,7 +41,7 @@ const App = () => {
   };
 
   return (
-    <div className="h-screen bg-slate-50 flex flex-col lg:flex-row font-sans text-slate-900 overflow-hidden relative">
+    <div translate="no" className="h-screen bg-slate-50 flex flex-col lg:flex-row font-sans text-slate-900 overflow-hidden relative">
       <MobileHeader onMenuOpen={() => setIsSidebarOpen(true)} />
       <Sidebar
         isOpen={isSidebarOpen}
