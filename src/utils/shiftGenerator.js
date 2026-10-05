@@ -8,11 +8,21 @@
 //    9:00〜22:00  … 登録スタッフ最低1人が必須。2人目は「空席」にしてよい(スポット等で補う)
 //   上限は 夜間1人 / それ以外2人
 //
+// 優先順位:
+//   1) 曜日固定(fixed)のスタッフを先に入れる(決まった曜日に働きたい意欲のある人のため)
+//   2) 残りの枠を、自由シフト(free)のスタッフで埋める
+//   どちらの段階でも「必須の時間帯」を先に埋め、2人目(任意枠)は後回しにする。
+//
+// 短すぎる勤務は作らない:
+//   1回の勤務は MIN_BLOCK_HOURS 時間以上にする(その人の希望枠がそれより短い場合は枠の長さ)。
+//   例外として、自由シフトの人に限り、必須の穴(夜間・朝・日中の最低1人)を埋める勤務なら
+//   短くてもよい。
+//
 // 方式: 1日ずつ順に埋めるのではなく、1週間まとめて「いま一番価値の高い勤務ブロック」を
-//       1つずつ決めていく(必須の時間帯が最優先)。これを乱数を少し変えて何回か繰り返し、
-//       採点が一番良い案を採用する。
+//       1つずつ決めていく。これを乱数を少し変えて何回か繰り返し、採点が一番良い案を採用する。
 
-const MIN_INTERVAL_HOURS = 12; // 勤務間インターバル(最低休息時間)。変更はここだけ
+const MIN_INTERVAL_HOURS = 12; // 勤務間インターバル(最低休息時間)
+const MIN_BLOCK_HOURS = 3;     // 1回の勤務の最低時間
 const DAY_START = 6;
 const DAY_END = 30;            // 翌6:00(この時刻は含まない)
 const NIGHT_START = 22;
@@ -55,49 +65,62 @@ const buildOnce = (staffList, weekDates, rng) => {
   staffList.forEach((s) => { blocks[s.id] = []; used[s.id] = 0; });
   const windows = staffList.map((s) => weekDates.map((date, d) => getWindow(s, d, date)));
 
-  for (;;) {
-    let best = null;
-    let bestScore = 0;
-    staffList.forEach((s, si) => {
-      const maxW = Number(s.maxWeeklyDays) || 0;
-      if (used[s.id] >= maxW) return;
-      const maxD = Number(s.maxDailyHours) || 8;
-      weekDates.forEach((_, d) => {
-        const w = windows[si][d];
-        if (!w || assign[d][s.id]) return;
-        const [ws, we] = w;
-        const desired = Math.min(maxD, we - ws);
-        for (let a = ws; a < we; a++) {
-          let b = a;
-          let gain = 0;
-          while (b < we && b - a < maxD && coverage[d][b] < capAt(b)) {
-            gain += hourValue(coverage[d][b], b);
-            b++;
+  // allow(s) が true のスタッフだけを対象に、入れる枠がなくなるまでブロックを決めていく
+  const fill = (allow) => {
+    for (;;) {
+      let best = null;
+      let bestScore = 0;
+      staffList.forEach((s, si) => {
+        if (!allow(s)) return;
+        const maxW = Number(s.maxWeeklyDays) || 0;
+        if (used[s.id] >= maxW) return;
+        const maxD = Number(s.maxDailyHours) || 8;
+        weekDates.forEach((_, d) => {
+          const w = windows[si][d];
+          if (!w || assign[d][s.id]) return;
+          const [ws, we] = w;
+          const desired = Math.min(maxD, we - ws);
+          const minLen = Math.min(MIN_BLOCK_HOURS, desired);
+          for (let a = ws; a < we; a++) {
+            let b = a;
+            let gain = 0;
+            let allMandatory = true; // このブロックの全時間が「必須の穴埋め」か
+            while (b < we && b - a < maxD && coverage[d][b] < capAt(b)) {
+              if (coverage[d][b] >= requiredAt(b)) allMandatory = false;
+              gain += hourValue(coverage[d][b], b);
+              b++;
+            }
+            if (b === a) continue;
+            // 短すぎる勤務は作らない(自由シフトの人の必須穴埋めだけ例外)
+            const shortAllowed = s.type !== 'fixed' && allMandatory;
+            if (b - a < minLen && !shortAllowed) continue;
+            const start = d * 24 + a;
+            const end = d * 24 + b;
+            const okInterval = blocks[s.id].every(
+              (x) => start - x.end >= MIN_INTERVAL_HOURS || x.start - end >= MIN_INTERVAL_HOURS
+            );
+            if (!okInterval) continue;
+            // 希望の時間数(最大勤務時間)に近いほど少し加点
+            const score = (gain + (30 * (b - a)) / desired) * (1 + 0.1 * rng());
+            if (score > bestScore) {
+              bestScore = score;
+              best = { s, d, a, b };
+            }
           }
-          if (b === a) continue;
-          const start = d * 24 + a;
-          const end = d * 24 + b;
-          const okInterval = blocks[s.id].every(
-            (x) => start - x.end >= MIN_INTERVAL_HOURS || x.start - end >= MIN_INTERVAL_HOURS
-          );
-          if (!okInterval) continue;
-          // 希望の時間数(最大勤務時間)に近いほど少し加点
-          const score = (gain + (30 * (b - a)) / desired) * (1 + 0.1 * rng());
-          if (score > bestScore) {
-            bestScore = score;
-            best = { s, d, a, b };
-          }
-        }
+        });
       });
-    });
-    if (!best) break;
-    const { s, d, a, b } = best;
-    const hours = [];
-    for (let h = a; h < b; h++) { hours.push(h); coverage[d][h]++; }
-    assign[d][s.id] = hours;
-    blocks[s.id].push({ start: d * 24 + a, end: d * 24 + b });
-    used[s.id]++;
-  }
+      if (!best) break;
+      const { s, d, a, b } = best;
+      const hours = [];
+      for (let h = a; h < b; h++) { hours.push(h); coverage[d][h]++; }
+      assign[d][s.id] = hours;
+      blocks[s.id].push({ start: d * 24 + a, end: d * 24 + b });
+      used[s.id]++;
+    }
+  };
+
+  fill((s) => s.type === 'fixed'); // 1) 曜日固定の人を先に
+  fill(() => true);                // 2) 残りを全員で(主に自由シフトの人)
   return { assign, coverage };
 };
 
