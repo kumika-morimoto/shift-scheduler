@@ -5,20 +5,13 @@ import ShiftViewer from './components/ShiftViewer';
 import StaffSettings from './components/StaffSettings';
 import { useStaffList } from './hooks/useStaffList';
 import { generateWeeklyShift } from './utils/shiftGenerator';
-
-const getInitialMonday = () => {
-  const d = new Date();
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  const monday = new Date(d.setDate(diff));
-  return monday.toISOString().split('T')[0];
-};
+import { getMondayOf } from './utils/weekUtils';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('viewer');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
-  const [startDate, setStartDate] = useState(getInitialMonday);
+  const [startDate, setStartDate] = useState(() => getMondayOf(new Date()));
   const [generatedShift, setGeneratedShift] = useState({});
 
   const { staffList, updateStaff, addStaff, deleteStaff, addOffDate, removeOffDate } = useStaffList();
