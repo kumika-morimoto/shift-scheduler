@@ -4,31 +4,32 @@ import Sidebar from './components/Sidebar';
 import ShiftViewer from './components/ShiftViewer';
 import StaffSettings from './components/StaffSettings';
 import { useStaffList } from './hooks/useStaffList';
+import { useSavedShifts } from './hooks/useSavedShifts';
 import { generateWeeklyShift } from './utils/shiftGenerator';
-import { getMondayOf } from './utils/weekUtils';
+import { getMondayOf, parseLocalDate, getWeekDates } from './utils/weekUtils';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('viewer');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
   const [startDate, setStartDate] = useState(() => getMondayOf(new Date()));
-  const [generatedShift, setGeneratedShift] = useState({});
 
   const { staffList, updateStaff, addStaff, deleteStaff, addOffDate, removeOffDate } = useStaffList();
+  const { getSavedShift, saveShift } = useSavedShifts();
 
-  const weekDates = useMemo(() => {
-    const dates = [];
-    const start = new Date(startDate);
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      dates.push(d.toISOString().split('T')[0]);
-    }
-    return dates;
-  }, [startDate]);
+  const weekDates = useMemo(() => getWeekDates(startDate), [startDate]);
+
+  // 日付入力でどの日を選んでも、その週の月曜に合わせる
+  const handleStartDateChange = (value) => {
+    if (value) setStartDate(getMondayOf(parseLocalDate(value)));
+  };
+
+  // 表示中の週の保存済み結果(なければ未生成)
+  const savedShift = getSavedShift(weekDates[0]);
 
   const handleGenerate = () => {
-    setGeneratedShift(generateWeeklyShift(staffList, weekDates));
+    if (savedShift && !window.confirm('この週の保存済みのシフトは、新しい案に置き換わります。よろしいですか?')) return;
+    saveShift(weekDates[0], generateWeeklyShift(staffList, weekDates));
     setActiveTab('viewer');
     setIsSidebarOpen(false);
   };
@@ -49,8 +50,9 @@ const App = () => {
             staffList={staffList}
             weekDates={weekDates}
             startDate={startDate}
-            setStartDate={setStartDate}
-            generatedShift={generatedShift}
+            onStartDateChange={handleStartDateChange}
+            generatedShift={savedShift ? savedShift.schedule : {}}
+            generatedAt={savedShift ? savedShift.generatedAt : null}
           />
         ) : (
           <StaffSettings

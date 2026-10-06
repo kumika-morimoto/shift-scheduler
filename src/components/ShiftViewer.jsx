@@ -1,14 +1,28 @@
 import { DAYS } from '../data/constants';
 import { getDayLaneData } from '../utils/shiftLayout';
+import { formatWeekRange } from '../utils/weekUtils';
 
-const ShiftViewer = ({ staffList, weekDates, startDate, setStartDate, generatedShift }) => (
+// ISO文字列を「10/6 16:10」の形式にする
+const formatGeneratedAt = (iso) => {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
+const ShiftViewer = ({ staffList, weekDates, startDate, onStartDateChange, generatedShift, generatedAt }) => (
   <div className="max-w-6xl mx-auto space-y-6 pb-24 animate-fadeIn">
     <div className="bg-white p-5 rounded-[1.5rem] border shadow-sm flex flex-wrap items-center justify-between gap-4">
       <div>
         <h1 className="text-lg font-black tracking-tight italic">REAL DATA PLANNER</h1>
         <p className="text-[10px] font-bold text-slate-400 uppercase">Management of {staffList.length} Active Staffs</p>
+        {generatedAt && formatGeneratedAt(generatedAt) && (
+          <p className="text-[10px] font-bold text-slate-400">生成: {formatGeneratedAt(generatedAt)}</p>
+        )}
       </div>
-      <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-slate-100 border-none p-2 rounded-lg font-black text-xs outline-none" />
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-black text-slate-600">{formatWeekRange(weekDates)}</span>
+        <input type="date" value={startDate} onChange={e => onStartDateChange(e.target.value)} className="bg-slate-100 border-none p-2 rounded-lg font-black text-xs outline-none" />
+      </div>
     </div>
 
     <div className="space-y-6">
